@@ -24,6 +24,7 @@ const totalRejected = document.getElementById("total-rejected");
 const submitBtn = document.getElementById("btn-submit");
 
 const applications = [];
+let editingId = null;
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -39,17 +40,32 @@ form.addEventListener("submit", function (e) {
   }
   formError.classList.add("hidden");
 
-  const job = {
-    id: Date.now(),
-    company,
-    position,
-    status,
-    date,
-    notes,
-  };
+  if (editingId === null) {
+    const job = {
+      id: Date.now(),
+      company,
+      position,
+      status,
+      date,
+      notes,
+    };
 
-  applications.push(job);
+    applications.push(job);
+  } else {
+    const jobToUpdate = applications.find(function (job) {
+      return job.id === editingId;
+    });
+    jobToUpdate.company = company;
+    jobToUpdate.position = position;
+    jobToUpdate.status = status;
+    jobToUpdate.date = date;
+    jobToUpdate.notes = notes;
+
+    editingId = null;
+    submitBtn.textContent = "Add Application";
+  }
   renderApplications();
+  form.reset();
   console.log(applications);
 });
 
@@ -83,7 +99,6 @@ const renderApplications = function () {
 
     applicationsGrid.insertAdjacentHTML("beforeend", html);
   });
-  form.reset();
 
   if (applications.length > 0) {
     emptyState.classList.add("hidden");
@@ -105,5 +120,23 @@ applicationsGrid.addEventListener("click", function (e) {
       applications.splice(index, 1);
       renderApplications();
     }
+  }
+
+  if (e.target.classList.contains("btn-edit")) {
+    const card = e.target.closest(".job-card");
+    const id = card.dataset.id;
+
+    const job = applications.find(function (job) {
+      return job.id === Number(id);
+    });
+
+    companyInput.value = job.company;
+    positionInput.value = job.position;
+    statusInput.value = job.status;
+    dateInput.value = job.date;
+    notesInput.value = job.notes;
+    editingId = job.id;
+
+    submitBtn.textContent = "Update Application";
   }
 });
