@@ -23,7 +23,9 @@ const totalRejected = document.getElementById("total-rejected");
 
 const submitBtn = document.getElementById("btn-submit");
 
-const applications = [];
+const applications = savedApplications ? JSON.parse(savedApplications) : [];
+
+const savedApplications = localStorage.getItem("applications");
 let editingId = null;
 
 form.addEventListener("submit", function (e) {
@@ -64,6 +66,7 @@ form.addEventListener("submit", function (e) {
     editingId = null;
     submitBtn.textContent = "Add Application";
   }
+  localStorage.setItem("applications", JSON.stringify(applications));
   renderApplications();
   form.reset();
   console.log(applications);
@@ -118,6 +121,7 @@ applicationsGrid.addEventListener("click", function (e) {
 
     if (index !== -1) {
       applications.splice(index, 1);
+      localStorage.setItem("applications", JSON.stringify(applications));
       renderApplications();
     }
   }
@@ -140,3 +144,4 @@ applicationsGrid.addEventListener("click", function (e) {
     submitBtn.textContent = "Update Application";
   }
 });
+renderApplications();
