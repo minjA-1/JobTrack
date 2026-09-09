@@ -1,5 +1,7 @@
 "use strict";
 
+// JobTrack - Job Application Tracker
+
 const form = document.getElementById("application-form");
 
 const companyInput = document.getElementById("company-input");
