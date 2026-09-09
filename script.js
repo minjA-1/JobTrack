@@ -56,7 +56,7 @@ form.addEventListener("submit", function (e) {
 const renderApplications = function () {
   applicationsGrid.innerHTML = "";
   applications.forEach(function (job) {
-    const html = `<div class="job-card">
+    const html = `<div class="job-card" data-id="${job.id}">
   <div class="job-card-header">
     <div class="company-logo">${job.company[0]}</div>
 
@@ -91,3 +91,19 @@ const renderApplications = function () {
     emptyState.classList.remove("hidden");
   }
 };
+
+applicationsGrid.addEventListener("click", function (e) {
+  if (e.target.classList.contains("btn-delete")) {
+    const card = e.target.closest(".job-card");
+    const id = card.dataset.id;
+
+    const index = applications.findIndex(function (job) {
+      return job.id === Number(id);
+    });
+
+    if (index !== -1) {
+      applications.splice(index, 1);
+      renderApplications();
+    }
+  }
+});
