@@ -22,3 +22,72 @@ const totalOffers = document.getElementById("total-offers");
 const totalRejected = document.getElementById("total-rejected");
 
 const submitBtn = document.getElementById("btn-submit");
+
+const applications = [];
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const company = companyInput.value.trim();
+  const position = positionInput.value.trim();
+  const status = statusInput.value.trim();
+  const date = dateInput.value.trim();
+  const notes = notesInput.value.trim();
+
+  if (!company || !position || !date) {
+    formError.classList.remove("hidden");
+    return;
+  }
+  formError.classList.add("hidden");
+
+  const job = {
+    id: Date.now(),
+    company,
+    position,
+    status,
+    date,
+    notes,
+  };
+
+  applications.push(job);
+  renderApplications();
+  console.log(applications);
+});
+
+const renderApplications = function () {
+  applicationsGrid.innerHTML = "";
+  applications.forEach(function (job) {
+    const html = `<div class="job-card">
+  <div class="job-card-header">
+    <div class="company-logo">${job.company[0]}</div>
+
+    <div>
+      <h3 class="job-company">${job.company}</h3>
+      <p class="job-position">${job.position}</p>
+    </div>
+  </div>
+
+  <span class="status-badge status-${job.status.toLowerCase()}">
+    ${job.status}
+  </span>
+
+  <div class="job-info">
+    <p>📅 ${job.date}</p>
+    <p class="job-note">${job.notes}</p>
+  </div>
+
+  <div class="card-actions">
+    <button class="btn-edit">Edit</button>
+    <button class="btn-delete">Delete</button>
+  </div>
+</div>`;
+
+    applicationsGrid.insertAdjacentHTML("beforeend", html);
+  });
+  form.reset();
+
+  if (applications.length > 0) {
+    emptyState.classList.add("hidden");
+  } else {
+    emptyState.classList.remove("hidden");
+  }
+};
