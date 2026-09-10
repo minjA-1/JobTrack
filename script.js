@@ -24,10 +24,10 @@ const totalOffers = document.getElementById("total-offers");
 const totalRejected = document.getElementById("total-rejected");
 
 const submitBtn = document.getElementById("btn-submit");
+const savedApplications = localStorage.getItem("applications");
 
 const applications = savedApplications ? JSON.parse(savedApplications) : [];
 
-const savedApplications = localStorage.getItem("applications");
 let editingId = null;
 
 form.addEventListener("submit", function (e) {
@@ -69,14 +69,15 @@ form.addEventListener("submit", function (e) {
     submitBtn.textContent = "Add Application";
   }
   localStorage.setItem("applications", JSON.stringify(applications));
-  renderApplications();
+  renderApplications(applications);
   form.reset();
   console.log(applications);
 });
 
-const renderApplications = function () {
+const renderApplications = function (apps) {
   applicationsGrid.innerHTML = "";
-  applications.forEach(function (job) {
+
+  apps.forEach((job) => {
     const html = `<div class="job-card" data-id="${job.id}">
   <div class="job-card-header">
     <div class="company-logo">${job.company[0]}</div>
@@ -105,7 +106,7 @@ const renderApplications = function () {
     applicationsGrid.insertAdjacentHTML("beforeend", html);
   });
 
-  if (applications.length > 0) {
+  if (apps.length > 0) {
     emptyState.classList.add("hidden");
   } else {
     emptyState.classList.remove("hidden");
@@ -124,7 +125,7 @@ applicationsGrid.addEventListener("click", function (e) {
     if (index !== -1) {
       applications.splice(index, 1);
       localStorage.setItem("applications", JSON.stringify(applications));
-      renderApplications();
+      renderApplications(applications);
     }
   }
 
@@ -146,4 +147,16 @@ applicationsGrid.addEventListener("click", function (e) {
     submitBtn.textContent = "Update Application";
   }
 });
-renderApplications();
+renderApplications(applications);
+
+searchInput.addEventListener("input", function (e) {
+  const query = e.target.value.trim().toLowerCase();
+
+  const filteredApplications = applications.filter((job) => {
+    return (
+      job.company.toLowerCase().includes(query) ||
+      job.position.toLowerCase().includes(query)
+    );
+  });
+  renderApplications(filteredApplications);
+});
