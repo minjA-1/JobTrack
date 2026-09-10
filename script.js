@@ -154,9 +154,19 @@ searchInput.addEventListener("input", function (e) {
 
   const filteredApplications = applications.filter((job) => {
     return (
-      job.company.toLowerCase().includes(query) ||
-      job.position.toLowerCase().includes(query)
+      (job.company.toLowerCase().includes(query) ||
+        job.position.toLowerCase().includes(query)) &&
+      (filterStatus.value === "all" || job.status === filterStatus.value)
     );
   });
   renderApplications(filteredApplications);
+});
+
+filterStatus.addEventListener("change", function (e) {
+  const selectStatus = e.target.value;
+
+  const selectFiltered = applications.filter((job) => {
+    return filterStatus.value === "all" || job.status === filterStatus.value;
+  });
+  renderApplications(selectFiltered);
 });
