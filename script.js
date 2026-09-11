@@ -69,6 +69,7 @@ form.addEventListener("submit", function (e) {
     submitBtn.textContent = "Add Application";
   }
   localStorage.setItem("applications", JSON.stringify(applications));
+  updateStats();
   renderApplications(applications);
   form.reset();
   console.log(applications);
@@ -113,6 +114,22 @@ const renderApplications = function (apps) {
   }
 };
 
+const updateStats = function () {
+  totalApplications.textContent = applications.length;
+
+  totalInterviews.textContent = applications.filter(
+    (job) => job.status === "Interview",
+  ).length;
+
+  totalOffers.textContent = applications.filter(
+    (job) => job.status === "Offer",
+  ).length;
+
+  totalRejected.textContent = applications.filter(
+    (job) => job.status === "Rejected",
+  ).length;
+};
+
 applicationsGrid.addEventListener("click", function (e) {
   if (e.target.classList.contains("btn-delete")) {
     const card = e.target.closest(".job-card");
@@ -125,6 +142,7 @@ applicationsGrid.addEventListener("click", function (e) {
     if (index !== -1) {
       applications.splice(index, 1);
       localStorage.setItem("applications", JSON.stringify(applications));
+      updateStats();
       renderApplications(applications);
     }
   }
@@ -188,3 +206,4 @@ sortInput.addEventListener("change", function (e) {
   });
   renderApplications(newApplications);
 });
+updateStats();
