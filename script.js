@@ -170,3 +170,21 @@ filterStatus.addEventListener("change", function (e) {
   });
   renderApplications(selectFiltered);
 });
+
+sortInput.addEventListener("change", function (e) {
+  const selectSort = e.target.value;
+
+  const newApplications = [...applications];
+
+  newApplications.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+
+    if (selectSort === "newest") {
+      return dateB - dateA;
+    } else {
+      return dateA - dateB;
+    }
+  });
+  renderApplications(newApplications);
+});
