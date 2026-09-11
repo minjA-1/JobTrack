@@ -68,7 +68,7 @@ form.addEventListener("submit", function (e) {
     editingId = null;
     submitBtn.textContent = "Add Application";
   }
-  localStorage.setItem("applications", JSON.stringify(applications));
+  saveApplications();
   updateStats();
   renderApplications(applications);
   form.reset();
@@ -80,29 +80,29 @@ const renderApplications = function (apps) {
 
   apps.forEach((job) => {
     const html = `<div class="job-card" data-id="${job.id}">
-  <div class="job-card-header">
+    <div class="job-card-header">
     <div class="company-logo">${job.company[0]}</div>
-
+    
     <div>
-      <h3 class="job-company">${job.company}</h3>
-      <p class="job-position">${job.position}</p>
+    <h3 class="job-company">${job.company}</h3>
+    <p class="job-position">${job.position}</p>
     </div>
-  </div>
-
-  <span class="status-badge status-${job.status.toLowerCase()}">
+    </div>
+    
+    <span class="status-badge status-${job.status.toLowerCase()}">
     ${job.status}
-  </span>
-
-  <div class="job-info">
+    </span>
+    
+    <div class="job-info">
     <p>📅 ${job.date}</p>
     <p class="job-note">${job.notes}</p>
-  </div>
-
-  <div class="card-actions">
+    </div>
+    
+    <div class="card-actions">
     <button class="btn-edit">Edit</button>
     <button class="btn-delete">Delete</button>
-  </div>
-</div>`;
+    </div>
+    </div>`;
 
     applicationsGrid.insertAdjacentHTML("beforeend", html);
   });
@@ -112,6 +112,25 @@ const renderApplications = function (apps) {
   } else {
     emptyState.classList.remove("hidden");
   }
+};
+
+const saveApplications = function () {
+  localStorage.setItem("applications", JSON.stringify(applications));
+};
+
+const applyFilters = function () {
+  const query = searchInput.value.toLowerCase().trim();
+
+  const selectFiltered = applications.filter((job) => {
+    return (
+      (job.company.toLowerCase().includes(query) ||
+        job.position.toLowerCase().includes(query)) &&
+      (filterStatus.value === "all" || job.status === filterStatus.value)
+    );
+  });
+
+  renderApplications(selectFiltered);
+  return selectFiltered;
 };
 
 const updateStats = function () {
@@ -141,7 +160,7 @@ applicationsGrid.addEventListener("click", function (e) {
 
     if (index !== -1) {
       applications.splice(index, 1);
-      localStorage.setItem("applications", JSON.stringify(applications));
+      saveApplications();
       updateStats();
       renderApplications(applications);
     }
@@ -167,33 +186,15 @@ applicationsGrid.addEventListener("click", function (e) {
 });
 renderApplications(applications);
 
-searchInput.addEventListener("input", function (e) {
-  const query = e.target.value.trim().toLowerCase();
+searchInput.addEventListener("input", applyFilters);
 
-  const filteredApplications = applications.filter((job) => {
-    return (
-      (job.company.toLowerCase().includes(query) ||
-        job.position.toLowerCase().includes(query)) &&
-      (filterStatus.value === "all" || job.status === filterStatus.value)
-    );
-  });
-  renderApplications(filteredApplications);
-});
-
-filterStatus.addEventListener("change", function (e) {
-  const selectStatus = e.target.value;
-
-  const selectFiltered = applications.filter((job) => {
-    return filterStatus.value === "all" || job.status === filterStatus.value;
-  });
-  renderApplications(selectFiltered);
-});
+filterStatus.addEventListener("change", applyFilters);
 
 sortInput.addEventListener("change", function (e) {
   const selectSort = e.target.value;
 
-  const newApplications = [...applications];
-
+  const filteredApplications = applyFilters();
+  const newApplications = [...filteredApplications];
   newApplications.sort((a, b) => {
     const dateA = new Date(a.date);
     const dateB = new Date(b.date);
@@ -204,6 +205,7 @@ sortInput.addEventListener("change", function (e) {
       return dateA - dateB;
     }
   });
+
   renderApplications(newApplications);
 });
 updateStats();
