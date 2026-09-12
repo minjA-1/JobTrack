@@ -154,15 +154,23 @@ applicationsGrid.addEventListener("click", function (e) {
     const card = e.target.closest(".job-card");
     const id = card.dataset.id;
 
-    const index = applications.findIndex(function (job) {
-      return job.id === Number(id);
-    });
+   const index = applications.findIndex((job) => {
+  return job.id === Number(id);
+});
 
-    if (index !== -1) {
-      applications.splice(index, 1);
-      saveApplications();
-      updateStats();
-      renderApplications(applications);
+if (index !== -1) {
+  applications.splice(index, 1);
+
+  if (editingId === Number(id)) {
+    editingId = null;
+    submitBtn.textContent = "Add Application";
+    form.reset();
+  }
+
+  saveApplications();
+  updateStats();
+  renderApplications(applications);
+}
     }
   }
 
