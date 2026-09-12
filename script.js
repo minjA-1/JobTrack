@@ -24,6 +24,7 @@ const totalOffers = document.getElementById("total-offers");
 const totalRejected = document.getElementById("total-rejected");
 
 const submitBtn = document.getElementById("btn-submit");
+
 const savedApplications = localStorage.getItem("applications");
 
 const applications = savedApplications ? JSON.parse(savedApplications) : [];
@@ -32,6 +33,7 @@ let editingId = null;
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
+
   const company = companyInput.value.trim();
   const position = positionInput.value.trim();
   const status = statusInput.value.trim();
@@ -42,6 +44,7 @@ form.addEventListener("submit", function (e) {
     formError.classList.remove("hidden");
     return;
   }
+
   formError.classList.add("hidden");
 
   if (editingId === null) {
@@ -59,6 +62,7 @@ form.addEventListener("submit", function (e) {
     const jobToUpdate = applications.find(function (job) {
       return job.id === editingId;
     });
+
     jobToUpdate.company = company;
     jobToUpdate.position = position;
     jobToUpdate.status = status;
@@ -68,10 +72,12 @@ form.addEventListener("submit", function (e) {
     editingId = null;
     submitBtn.textContent = "Add Application";
   }
+
   saveApplications();
   updateStats();
   renderApplications(applications);
   form.reset();
+
   console.log(applications);
 });
 
@@ -79,30 +85,32 @@ const renderApplications = function (apps) {
   applicationsGrid.innerHTML = "";
 
   apps.forEach((job) => {
-    const html = `<div class="job-card" data-id="${job.id}">
-    <div class="job-card-header">
-    <div class="company-logo">${job.company[0]}</div>
-    
-    <div>
-    <h3 class="job-company">${job.company}</h3>
-    <p class="job-position">${job.position}</p>
-    </div>
-    </div>
-    
-    <span class="status-badge status-${job.status.toLowerCase()}">
-    ${job.status}
-    </span>
-    
-    <div class="job-info">
-    <p>📅 ${job.date}</p>
-    <p class="job-note">${job.notes}</p>
-    </div>
-    
-    <div class="card-actions">
-    <button class="btn-edit">Edit</button>
-    <button class="btn-delete">Delete</button>
-    </div>
-    </div>`;
+    const html = `
+      <div class="job-card" data-id="${job.id}">
+        <div class="job-card-header">
+          <div class="company-logo">${job.company[0]}</div>
+
+          <div>
+            <h3 class="job-company">${job.company}</h3>
+            <p class="job-position">${job.position}</p>
+          </div>
+        </div>
+
+        <span class="status-badge status-${job.status.toLowerCase()}">
+          ${job.status}
+        </span>
+
+        <div class="job-info">
+          <p>📅 ${job.date}</p>
+          <p class="job-note">${job.notes}</p>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn-edit">Edit</button>
+          <button class="btn-delete">Delete</button>
+        </div>
+      </div>
+    `;
 
     applicationsGrid.insertAdjacentHTML("beforeend", html);
   });
@@ -130,6 +138,7 @@ const applyFilters = function () {
   });
 
   renderApplications(selectFiltered);
+
   return selectFiltered;
 };
 
@@ -154,23 +163,22 @@ applicationsGrid.addEventListener("click", function (e) {
     const card = e.target.closest(".job-card");
     const id = card.dataset.id;
 
-   const index = applications.findIndex((job) => {
-  return job.id === Number(id);
-});
+    const index = applications.findIndex((job) => {
+      return job.id === Number(id);
+    });
 
-if (index !== -1) {
-  applications.splice(index, 1);
+    if (index !== -1) {
+      applications.splice(index, 1);
 
-  if (editingId === Number(id)) {
-    editingId = null;
-    submitBtn.textContent = "Add Application";
-    form.reset();
-  }
+      if (editingId === Number(id)) {
+        editingId = null;
+        submitBtn.textContent = "Add Application";
+        form.reset();
+      }
 
-  saveApplications();
-  updateStats();
-  renderApplications(applications);
-}
+      saveApplications();
+      updateStats();
+      renderApplications(applications);
     }
   }
 
@@ -187,11 +195,13 @@ if (index !== -1) {
     statusInput.value = job.status;
     dateInput.value = job.date;
     notesInput.value = job.notes;
+
     editingId = job.id;
 
     submitBtn.textContent = "Update Application";
   }
 });
+
 renderApplications(applications);
 
 searchInput.addEventListener("input", applyFilters);
@@ -202,7 +212,9 @@ sortInput.addEventListener("change", function (e) {
   const selectSort = e.target.value;
 
   const filteredApplications = applyFilters();
+
   const newApplications = [...filteredApplications];
+
   newApplications.sort((a, b) => {
     const dateA = new Date(a.date);
     const dateB = new Date(b.date);
@@ -216,4 +228,5 @@ sortInput.addEventListener("change", function (e) {
 
   renderApplications(newApplications);
 });
+
 updateStats();
