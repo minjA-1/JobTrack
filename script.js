@@ -137,9 +137,23 @@ const applyFilters = function () {
     );
   });
 
-  renderApplications(selectFiltered);
+  const newApplications = [...selectFiltered];
+  const selectSort = sortInput.value;
 
-  return selectFiltered;
+  newApplications.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+
+    if (selectSort === "newest") {
+      return dateB - dateA;
+    } else {
+      return dateA - dateB;
+    }
+  });
+
+  renderApplications(newApplications);
+
+  return newApplications;
 };
 
 const updateStats = function () {
