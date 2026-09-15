@@ -75,7 +75,7 @@ form.addEventListener("submit", function (e) {
 
   saveApplications();
   updateStats();
-  renderApplications(applications);
+  applyFilters();
   form.reset();
 
   console.log(applications);
