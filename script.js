@@ -85,6 +85,11 @@ const renderApplications = function (apps) {
   applicationsGrid.innerHTML = "";
 
   apps.forEach((job) => {
+    const formattedDate = new Date(job.date).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
     const html = `
       <div class="job-card" data-id="${job.id}">
         <div class="job-card-header">
@@ -101,7 +106,7 @@ const renderApplications = function (apps) {
         </span>
 
         <div class="job-info">
-          <p>📅 ${job.date}</p>
+          <p>📅 ${formattedDate}</p>
           <p class="job-note">${job.notes}</p>
         </div>
 
@@ -128,6 +133,7 @@ const saveApplications = function () {
 
 const applyFilters = function () {
   const query = searchInput.value.toLowerCase().trim();
+  console.log("QUERY", query);
 
   const selectFiltered = applications.filter((job) => {
     return (
@@ -194,25 +200,25 @@ applicationsGrid.addEventListener("click", function (e) {
       updateStats();
       applyFilters();
     }
+  }
 
-    if (e.target.classList.contains("btn-edit")) {
-      const card = e.target.closest(".job-card");
-      const id = card.dataset.id;
+  if (e.target.classList.contains("btn-edit")) {
+    const card = e.target.closest(".job-card");
+    const id = card.dataset.id;
 
-      const job = applications.find(function (job) {
-        return job.id === Number(id);
-      });
+    const job = applications.find(function (job) {
+      return job.id === Number(id);
+    });
 
-      companyInput.value = job.company;
-      positionInput.value = job.position;
-      statusInput.value = job.status;
-      dateInput.value = job.date;
-      notesInput.value = job.notes;
+    companyInput.value = job.company;
+    positionInput.value = job.position;
+    statusInput.value = job.status;
+    dateInput.value = job.date;
+    notesInput.value = job.notes;
 
-      editingId = job.id;
+    editingId = job.id;
 
-      submitBtn.textContent = "Update Application";
-    }
+    submitBtn.textContent = "Update Application";
   }
 });
 
